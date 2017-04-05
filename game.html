@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>thanks Darren</title>
+		<script>
+			leftkey = false;
+			rightkey = false;
+			upkey = false;
+			downkey = false;
+			
+			bgm = new Audio('src/elephantwalk.mp3');
+			bg1audio = new Audio('src/beargrown1.mp3');
+			bg2audio = new Audio('src/beargrown2.mp3');
+			bg3audio = new Audio('src/finalbearsound.mp3');
+			
+			bullet_counter = 0;
+			onkeydown=getKeyboardInput;
+			onkeyup=getReleaseInput;
+			function endingscreen() {
+				//bgm.pause();
+				bg3audio.play();
+				var bg = document.getElementById('redscreen');
+				bg.style.opacity = "100";
+				
+				var im = document.createElement('img');
+				im.src = "src/gameoverscreen.jpg";
+				im.width = "853";
+				im.height = "480";
+				im.style.position = "absolute";
+				im.style.zIndex = "10";
+				
+				document.body.appendChild(im);
+			}
+				
+			function move(){
+				var ret = document.getElementById('reticle');
+				if(leftkey){
+					ret.style.left = parseInt(ret.style.left) + 5 + 'px';
+				}
+				if(rightkey){
+					ret.style.left = parseInt(ret.style.left) - 5 + 'px';
+				}
+				if(upkey){
+					ret.style.top = parseInt(ret.style.top) - 5 + 'px';
+				}
+				if(downkey){
+					ret.style.top = parseInt(ret.style.top) + 5 + 'px';
+				}
+			}
+			function getReleaseInput(e){
+				
+				var keycode = null;
+				if(e.event){
+					keycode = e.event;
+				} else if(e.which){
+					keycode = e.which
+				}
+				
+				if(keycode == 39){
+					leftkey = false;
+				} else if(keycode == 37){
+					rightkey = false;
+				} else if(keycode == 38){
+					upkey = false;
+				} else if(keycode == 40){
+					downkey = false;
+				}
+			}
+			function getKeyboardInput(e){
+				var keycode = null;
+				var ret = document.getElementById('reticle');
+				
+				if(e.event){
+					keycode = e.event;
+				} else if(e.which) {
+					keycode = e.which
+				}
+			
+				if(keycode == 39){
+					//move reticle right
+					//ret.style.left = parseInt(ret.style.left) + 5 + 'px';
+					leftkey = true;
+				} else if(keycode == 37){
+					//move reticle left
+					//ret.style.left = parseInt(ret.style.left) - 5 + 'px';
+					rightkey = true;
+				} else if(keycode == 38){
+					//move reticle up
+					//ret.style.top = parseInt(ret.style.top) - 5 + 'px';
+					upkey = true;
+				} else if(keycode == 40){
+					//move reticle down
+					//ret.style.top = parseInt(ret.style.top) + 5 + 'px';
+					downkey = true;
+				} else if(keycode == 70){
+					//fire
+					fireshot(ret.style.left, ret.style.top);
+				}	
+			}
+			function fireshot(posx, posy){
+				var audio = new Audio('src/cartoonshot.wav');
+				audio.play();
+				
+				var im = document.createElement('img');
+				im.src = "src/bullet_hole.png";
+				im.id = "bullet" + bullet_counter;
+				im.width = "20";
+				im.height = "20";
+				im.style.top = posy;
+				im.style.left = posx;
+				im.style.zIndex = "0";
+				im.style.position = "absolute";
+				
+				document.body.appendChild(im);
+				
+				bullet_counter ++;
+				
+				if(bullet_counter == 10){
+					bgm.pause();
+					bg1audio.play();
+					bg1audio.addEventListener('ended', function(){
+						bgm.play();
+					});	
+				}
+				if(bullet_counter == 20){
+					bgm.pause();
+					bg2audio.play();
+					bg2audio.addEventListener('ended', function(){
+						bgm.play();
+					});
+					
+				}
+				
+				if(bullet_counter == 25){
+					endingscreen();
+				}
+			}
+			function init(){
+				
+				var im = document.createElement('img');
+				im.src = "src/target.png";
+				im.id =  "reticle";
+				im.width = "20";
+				im.height = "20";
+				im.style.top = "100px";
+				im.style.left = "100px";
+				im.style.position = "absolute";
+				im.style.zIndex = "3";
+				
+				document.body.appendChild(im);
+				
+				setInterval(move, 20);
+				
+				bgm.play();
+				
+				var im = document.createElement('img');
+				im.id = "redscreen";
+				im.src = "src/red.jpg";
+				im.width = window.innerWidth;
+				im.height = window.innerHeight;
+				im.margin = "0px";
+				im.style.position = "absolute";
+				im.style.top = "0px";
+				im.style.left = "0px";
+				im.style.opacity = "0";
+				im.style.zIndex = "5";
+				
+				document.body.appendChild(im);
+			}
+			
+			onload = init;
+		
+		</script>
+	</head>
+	<body>
+		<script src="snowstorm.js"></script>
+	</body>
+</html>  
