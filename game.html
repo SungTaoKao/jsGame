@@ -2,21 +2,90 @@
 <html>
 	<head>
 		<title>thanks Darren</title>
+		<link rel="stylesheet" type="text/css" href="w3.css"/>
 		<script>
 			leftkey = false;
 			rightkey = false;
 			upkey = false;
 			downkey = false;
 			
+			upBear = false;
+			leftBear = false;
+			
+			endstate = false;
+			
 			bgm = new Audio('src/elephantwalk.mp3');
 			bg1audio = new Audio('src/beargrown1.mp3');
 			bg2audio = new Audio('src/beargrown2.mp3');
 			bg3audio = new Audio('src/finalbearsound.mp3');
 			
+			print_counter = 0;
+			print_pos = 0;
 			bullet_counter = 0;
+			
 			onkeydown=getKeyboardInput;
 			onkeyup=getReleaseInput;
 			
+			function winScreen(){
+				endstate = true;	
+				var im = document.createElement('img');
+				im.id = "blackscreen";
+				im.src = "src/black.jpg";
+				im.width = window.innerWidth;
+				im.height = window.innerHeight;
+				im.style.top = "0px";
+				im.style.left = "0px";
+				im.style.position = "absolute";
+				im.style.zIndex = "6";
+				im.className = "w3-animate-opacity";
+				document.body.appendChild(im);
+				
+				bgm.pause();
+				var deadBear = new Audio("src/bear_death.mp3");
+				var audio = new Audio("src/envelope.mp3");
+				
+				deadBear.play();
+				deadBear.addEventListener('ended', function(){
+						audio.play();
+				});	
+				
+				var im = document.createElement('img');
+				im.id = "letter";
+				im.src = "src/panda_letter.jpg";
+				im.width = 400;
+				im.height = 225;
+				im.style.left = "50px";
+				im.style.top = "170px";
+				im.style.border = "5px white solid";
+				//im.style.position = "absolute";
+				im.style.zIndex = "7";
+				im.className = "w3-display-left w3-center w3-animate-left";				
+				
+				setTimeout(function(){
+					document.body.appendChild(im);
+					var audio = new Audio("src/deathsong.mp3");
+					audio.play();
+					}, 6000);
+				
+				var im1 = document.createElement('img');
+				im1.id = "sadpanda";
+				im1.src = "src/cryingbear.gif";
+				im1.width = 500;
+				im1.height = 280;
+				im1.style.left = "20px";
+				im1.style.top = "300px";
+				im1.style.border = "5px white solid";
+				im1.style.zIndex = "7";
+				im1.style.position = "absolute";
+				im1.className = "w3-animate-opacity";
+				
+				setTimeout(function(){
+					document.body.appendChild(im1);
+					}, 10500);
+				
+				setTimeout(fadeout, 13000);
+				
+			}
 			function removeAllBullets() {
 				while(bullet_counter > 0){
 					bullet_counter--;
@@ -25,6 +94,7 @@
 				}
 			}
 			function refresh(){
+				endstate = false;
 				removeAllBullets();
 				bgm.currentTime = 0;
 				bgm.play();
@@ -33,32 +103,45 @@
 				
 				var im = document.getElementById("redscreen");
 				im.style.opacity = "0";
+				im.className = "";
 				
 				var im = document.getElementById("gameover");
 				im.style.opacity = "0";
+				im.className = "";
 				
 				var im = document.getElementById("restart");
 				im.style.opacity = "0";
+				im.className = "";
 				im.onclick = function(){};
+				
+				var im = document.getElementById('reticle');
+				im.style.top = Math.floor(window.innerHeight / 2) + "px";
+				im.style.left = Math.floor(window.innerWidth / 2) + "px"; 
 				
 				writeNumbers(25);
 			}
 			function endingscreen() {
 				//bgm.pause();
-				
+				endstate = true;
 				bg3audio.play();
 				var bg = document.getElementById('redscreen');
+				bg.className = "w3-animate-opacity";
 				bg.style.opacity = "100";
 				
 				var im = document.getElementById("gameover");
+				im.className = "w3-animate-opacity";
 				im.style.opacity = "100";
 				
 				var im = document.getElementById("restart");
+				im.className = "w3-animate-opacity";
 				im.style.opacity = "100";
 				im.onclick = refresh;
 			}
 				
 			function move(){
+				if(endstate){
+					return;
+				}
 				var ret = document.getElementById('reticle');
 				if(leftkey){
 					ret.style.left = parseInt(ret.style.left) + 5 + 'px';
@@ -72,8 +155,49 @@
 				if(downkey){
 					ret.style.top = parseInt(ret.style.top) + 5 + 'px';
 				}
-				
+
 				bounded(ret);
+			}
+			
+			function moveBear(){
+				if(endstate){
+					return;
+				}
+				var box = document.getElementById('bear');
+				if(upBear){
+					box.style.top = parseInt(box.style.top) - Math.random() * 2 + 'px';
+				} else {
+					box.style.top = parseInt(box.style.top) + Math.random() * 2 + 'px';
+				}
+				
+				if(leftBear){
+					box.style.left = parseInt(box.style.left) - Math.random() * 2 + 'px';
+				} else {
+					box.style.left = parseInt(box.style.left) + Math.random() * 2 + 'px';
+				}
+				
+				if(Math.random() * 1000 > 990){
+					drawPrint(box.style.left, box.style.top);
+				}
+				bearBound(box);
+			}
+			
+			function bearBound(img){
+				if(parseInt(img.style.left) < 0) {
+					img.style.left = "0px";
+					leftBear = false;
+				} else if(parseInt(img.style.left) + 
+						  img.width + 20 > window.innerWidth) {
+					img.style.left = (window.innerWidth - img.width - 20) + "px";
+					leftBear = true;
+				} else if(parseInt(img.style.top) < 0) {
+					img.style.top = "0px";
+					upBear = false;
+				} else if(parseInt(img.style.top) +
+						  img.height + 20 > window.innerHeight) {
+					img.style.top = (window.innerHeight - img.height - 20) + "px";
+					upBear = true;
+				}
 			}
 			
 			function bounded(img){
@@ -109,6 +233,9 @@
 				}
 			}
 			function getKeyboardInput(e){
+				if(endstate){
+					return;
+				}
 				var keycode = null;
 				var ret = document.getElementById('reticle');
 				
@@ -140,6 +267,9 @@
 				}	
 			}
 			function fireshot(posx, posy){
+				if(endstate){
+					return;
+				}
 				var audio = new Audio('src/cartoonshot.wav');
 				audio.play();
 				
@@ -155,9 +285,22 @@
 				
 				document.body.appendChild(im);
 				
+				var bear = document.getElementById('bear');
+				if(parseInt(posx) > (parseInt(bear.style.left)) &&
+				   parseInt(posx) < (parseInt(bear.style.left) + bear.width) &&
+				   parseInt(posy) > (parseInt(bear.style.top)) &&
+				   parseInt(posy) < (parseInt(bear.style.top) + bear.height)
+				   )
+				   {
+					winScreen();
+					return;
+				}
+				
 				bullet_counter ++;
 				
 				writeNumbers(25 - bullet_counter);
+				
+				
 				
 				if(bullet_counter == 10){
 					bgm.pause();
@@ -199,6 +342,8 @@
 				document.body.appendChild(im);
 				
 				setInterval(move, 20);
+				setInterval(moveBear, 40);
+				setInterval(destroyPrint, 3000);
 				
 				bgm.play();
 				
@@ -257,6 +402,10 @@
 				
 				im.onclick = function(){};
 				document.body.appendChild(im);
+				
+				createBear();
+				
+				
 			}
 			
 			function writeNumbers(number){
@@ -303,6 +452,7 @@
 				}
 			}
 			function start(){
+			
 				var im = document.createElement("img");
 				im.src = "src/title.png";
 				im.id = "title";
@@ -315,6 +465,7 @@
 				var im = document.createElement("img");
 				im.src = "src/start.png";
 				im.id = "start_button";
+				im.className = "w3-animate-opacity";
 				im.width = 100;
 				im.height = 100;
 				im.style.top = Math.floor(window.innerHeight / 2) + "px";
@@ -323,6 +474,82 @@
 				im.onclick = ini;
 				
 				document.body.appendChild(im);
+			}
+			function createBear(){
+				var im = document.createElement('img');
+				im.id = "bear";
+				im.src = "src/hitbox.jpg";
+				im.height = 150;
+				im.width = 150;
+				im.style.position = "absolute";
+				//im.style.opacity = "0";
+				//im.style.border = "2px solid black";
+				im.style.top = Math.floor(Math.random() * window.innerHeight) + "px";
+				im.style.left = Math.floor(Math.random() * window.innerWidth) + "px";
+				
+				document.body.appendChild(im);
+			}
+			function fadeout(){
+				var im = document.createElement('img');
+				im.id = "blackscreen2";
+				im.src = "src/black.jpg";
+				im.width = window.innerWidth;
+				im.height = window.innerHeight;
+				im.style.top = "0px";
+				im.style.left = "0px";
+				im.style.position = "absolute";
+				im.style.zIndex = "8";
+				im.className = "w3-animate-opacity";
+				document.body.appendChild(im);
+				
+				var im1 = document.createElement('img');
+				im1.id = "guilt_trip";
+				im1.src = "src/guilt_trip.png";
+				im1.onclick = ow;
+				im1.height = 84;
+				im1.width = 476;
+				im1.style.zIndex = "12";
+				im1.style.position = "absolute";
+				im1.className = "w3-animate-opacity";
+				im1.style.top = "170px";
+				im1.style.left = Math.round(window.innerWidth / 2 - (im1.width/2))  + "px";
+				
+				
+				setTimeout(function(){
+					document.body.appendChild(im1);
+				}, 2000);
+			}
+			
+			function ow(){
+				window.location = 'http://www.wwf.ca/';
+			}
+			function drawPrint(posx, posy){
+				if(endstate){
+					return;
+				}
+				
+				var im = document.createElement('img');
+				im.id = "print" + print_counter;
+				im.src = "src/print.png";
+				im.width = 20;
+				im.height = 26;
+				im.style.left = posx;
+				im.style.top = posy;
+				im.style.position = "absolute";
+				im.zIndex = "2";
+				im.className = "w3-animate-opacity";
+				
+				document.body.appendChild(im);
+				
+				print_counter++;							
+			}
+			function destroyPrint(){
+				if(print_counter > print_pos){
+					print = document.getElementById("print" + print_pos);
+					print.className = "w3-animate-fadeout";
+					print.addEventListener("animationend", print.parentNode.removeChild(print));
+					print_pos++;
+				}				
 			}
 			onload = start;
 		
