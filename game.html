@@ -165,15 +165,15 @@
 				}
 				var box = document.getElementById('bear');
 				if(upBear){
-					box.style.top = parseInt(box.style.top) - Math.random() * 2 + 'px';
+					box.style.top = parseInt(box.style.top) - Math.random() * 5 + 'px';
 				} else {
-					box.style.top = parseInt(box.style.top) + Math.random() * 2 + 'px';
+					box.style.top = parseInt(box.style.top) + Math.random() * 5 + 'px';
 				}
 				
 				if(leftBear){
-					box.style.left = parseInt(box.style.left) - Math.random() * 2 + 'px';
+					box.style.left = parseInt(box.style.left) - Math.random() * 5 + 'px';
 				} else {
-					box.style.left = parseInt(box.style.left) + Math.random() * 2 + 'px';
+					box.style.left = parseInt(box.style.left) + Math.random() * 5 + 'px';
 				}
 				
 				if(Math.random() * 1000 > 990){
@@ -479,8 +479,8 @@
 				var im = document.createElement('img');
 				im.id = "bear";
 				im.src = "src/hitbox.jpg";
-				im.height = 75;
-				im.width = 75;
+				im.height = 50;
+				im.width = 50;
 				im.style.position = "absolute";
 				//im.style.opacity = "0";
 				//im.style.border = "2px solid black";
