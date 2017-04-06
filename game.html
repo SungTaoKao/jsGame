@@ -16,20 +16,46 @@
 			bullet_counter = 0;
 			onkeydown=getKeyboardInput;
 			onkeyup=getReleaseInput;
+			
+			function removeAllBullets() {
+				while(bullet_counter > 0){
+					bullet_counter--;
+					var im = document.getElementById("bullet" + bullet_counter);
+					im.parentNode.removeChild(im);
+				}
+			}
+			function refresh(){
+				removeAllBullets();
+				bgm.currentTime = 0;
+				bgm.play();
+				bg3audio.pause();
+				bg3audio.currentTime = 0;
+				
+				var im = document.getElementById("redscreen");
+				im.style.opacity = "0";
+				
+				var im = document.getElementById("gameover");
+				im.style.opacity = "0";
+				
+				var im = document.getElementById("restart");
+				im.style.opacity = "0";
+				im.onclick = function(){};
+				
+				writeNumbers(25);
+			}
 			function endingscreen() {
 				//bgm.pause();
+				
 				bg3audio.play();
 				var bg = document.getElementById('redscreen');
 				bg.style.opacity = "100";
 				
-				var im = document.createElement('img');
-				im.src = "src/gameoverscreen.jpg";
-				im.width = "853";
-				im.height = "480";
-				im.style.position = "absolute";
-				im.style.zIndex = "10";
+				var im = document.getElementById("gameover");
+				im.style.opacity = "100";
 				
-				document.body.appendChild(im);
+				var im = document.getElementById("restart");
+				im.style.opacity = "100";
+				im.onclick = refresh;
 			}
 				
 			function move(){
@@ -45,6 +71,22 @@
 				}
 				if(downkey){
 					ret.style.top = parseInt(ret.style.top) + 5 + 'px';
+				}
+				
+				bounded(ret);
+			}
+			
+			function bounded(img){
+				if(parseInt(img.style.left) < 0) {
+					img.style.left = "0px";
+				} else if(parseInt(img.style.left) + 
+						  img.width > window.innerWidth) {
+					img.style.left = (window.innerWidth - img.width) + "px";
+				} else if(parseInt(img.style.top) < 0) {
+					img.style.top = "0px";
+				} else if(parseInt(img.style.top) +
+						  img.height > window.innerHeight) {
+					img.style.top = (window.innerHeight - img.height) + "px";
 				}
 			}
 			function getReleaseInput(e){
@@ -108,12 +150,14 @@
 				im.height = "20";
 				im.style.top = posy;
 				im.style.left = posx;
-				im.style.zIndex = "0";
+				im.style.zIndex = "3";
 				im.style.position = "absolute";
 				
 				document.body.appendChild(im);
 				
 				bullet_counter ++;
+				
+				writeNumbers(25 - bullet_counter);
 				
 				if(bullet_counter == 10){
 					bgm.pause();
@@ -135,17 +179,22 @@
 					endingscreen();
 				}
 			}
-			function init(){
+			function ini(){
+				var im = document.getElementById('title');
+				im.parentNode.removeChild(im);
 				
+				var im = document.getElementById('start_button');
+				im.parentNode.removeChild(im);
+				 
 				var im = document.createElement('img');
 				im.src = "src/target.png";
 				im.id =  "reticle";
 				im.width = "20";
 				im.height = "20";
-				im.style.top = "100px";
-				im.style.left = "100px";
+				im.style.top = Math.floor(window.innerHeight / 2) + "px";
+				im.style.left = Math.floor(window.innerWidth / 2) + "px";
 				im.style.position = "absolute";
-				im.style.zIndex = "3";
+				im.style.zIndex = "4";
 				
 				document.body.appendChild(im);
 				
@@ -166,9 +215,116 @@
 				im.style.zIndex = "5";
 				
 				document.body.appendChild(im);
+				
+				var im = document.createElement('img');
+				im.id = "bullets";
+				im.src = "src/bullet_icon.png";
+				im.width = 50;
+				im.height = 50;
+				im.style.position = "absolute";
+				im.style.top = window.innerHeight - 60 + "px";
+				im.style.left = window.innerWidth - 180 + "px";
+				im.style.zIndex = "4";
+				
+				document.body.appendChild(im);
+				
+				createNumbers();
+				
+				writeNumbers(25);
+				
+				var im = document.createElement('img');
+				im.src = "src/gameoverscreen.jpg";
+				im.id = "gameover";
+				im.width = "853";
+				im.height = "480";
+				im.style.left = window.innerWidth/2 - 400 + "px";
+				im.style.opacity = "0";
+				im.style.position = "absolute";
+				im.style.zIndex = "10";
+				
+				document.body.appendChild(im);
+				
+				var im = document.createElement('img');
+				im.src = "src/restart.png";
+				im.id = "restart";
+				im.width = "100";
+				im.height = "100";
+				im.style.opacity = "0";
+				im.style.position = "absolute";
+				im.style.zIndex = "11";
+				im.style.left = window.innerWidth / 2 - 50 + "px";
+				im.style.top = "350px"
+				
+				im.onclick = function(){};
+				document.body.appendChild(im);
 			}
 			
-			onload = init;
+			function writeNumbers(number){
+				
+				var dig0 = Math.floor(number / 10);
+				var dig1 = number % 10;
+
+				var im0 = document.getElementById(dig0 + "o");
+				var im1 = document.getElementById(dig1 + "t");
+				
+				im0.style.top = window.innerHeight - 60 + "px";
+				im0.style.left = window.innerWidth - 130 + "px";
+				
+				im1.style.top = window.innerHeight - 60 + "px";
+				im1.style.left = window.innerWidth - 80 + "px";
+				
+				document.body.appendChild(im0);
+				document.body.appendChild(im1);
+			}
+			
+			function createNumbers(){
+				for(var i = 0; i <= 9; i++){
+					var im = document.createElement('img');
+					im.id = i + "t";
+					im.src = "src/number/" + i + ".png";
+					im.width = 50;
+					im.height = 50;
+					im.style.position = "absolute";
+					im.style.zIndex = "2";
+					im.style.top = -60 + "px";
+					im.style.left = -80 + "px";
+					document.body.appendChild(im);
+					
+					var im = document.createElement('img');
+					im.id = i + "o";
+					im.src = "src/number/" + i + ".png";
+					im.width = 50;
+					im.height = 50;
+					im.style.position = "absolute";
+					im.style.zIndex = "2";
+					im.style.top = -60 + "px";
+					im.style.left = -80 + "px";
+					document.body.appendChild(im);
+				}
+			}
+			function start(){
+				var im = document.createElement("img");
+				im.src = "src/title.png";
+				im.id = "title";
+				im.style.position = "absolute";
+				im.style.top = Math.floor(window.innerHeight / 2) - 100 + "px";
+				im.style.left = Math.floor(window.innerWidth / 2) - 200 + "px";
+				
+				document.body.appendChild(im);
+				
+				var im = document.createElement("img");
+				im.src = "src/start.png";
+				im.id = "start_button";
+				im.width = 100;
+				im.height = 100;
+				im.style.top = Math.floor(window.innerHeight / 2) + "px";
+				im.style.left = Math.floor(window.innerWidth / 2) - 50 + "px";
+				im.style.position = "absolute";
+				im.onclick = ini;
+				
+				document.body.appendChild(im);
+			}
+			onload = start;
 		
 		</script>
 	</head>
