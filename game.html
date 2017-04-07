@@ -539,6 +539,16 @@
 				im.zIndex = "2";
 				im.className = "w3-animate-opacity";
 				
+				if(upBear && leftBear){
+					im.style.transform = "rotate(-45deg)";
+				} else if(upBear && !leftBear) {
+					im.style.transform = "rotate(45deg)";
+				} else if(!upBear && leftBear) {
+					im.style.transform = "rotate(-135deg)";
+				} else if(!upBear && !leftBear) {
+					im.style.transform = "rotate(135deg)";
+				}
+				
 				document.body.appendChild(im);
 				
 				print_counter++;							
